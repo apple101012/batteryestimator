@@ -178,10 +178,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         statusItem.length = NSStatusItem.variableLength
         if let snapshot {
-            statusItem.button?.title = "Battery \(snapshot.statusTitle)"
+            statusItem.button?.title = snapshot.statusTitle
             statusItem.button?.image = nil
         } else {
-            statusItem.button?.title = " Battery --"
+            statusItem.button?.title = "--"
             statusItem.button?.image = nil
         }
 
