@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_NAME="Battery Usage"
 BUNDLE_ID="com.apple101012.BatteryUsage"
-VERSION="${VERSION:-1.0.0}"
+VERSION="${VERSION:-1.0.1}"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
 BUILD_DIR="$ROOT_DIR/build"
 APP_PATH="$BUILD_DIR/$APP_NAME.app"
@@ -15,14 +15,12 @@ RESOURCES_DIR="$CONTENTS_DIR/Resources"
 rm -rf "$APP_PATH"
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 
-/usr/bin/sed \
-  -e "s#<string>1.0.0</string>#<string>$VERSION</string>#" \
-  -e "s#<string>1</string>#<string>$BUILD_NUMBER</string>#" \
-  "$ROOT_DIR/Resources/Info.plist" > "$CONTENTS_DIR/Info.plist"
+/bin/cp "$ROOT_DIR/Resources/Info.plist" "$CONTENTS_DIR/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$CONTENTS_DIR/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$CONTENTS_DIR/Info.plist"
 
 /usr/bin/swiftc \
   -O \
-  -parse-as-library \
   -target "$(uname -m)-apple-macos13.0" \
   -framework AppKit \
   -framework ServiceManagement \

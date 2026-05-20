@@ -6,7 +6,7 @@ This started as a SwiftBar plugin. The current release is a standalone Mac app, 
 
 ## Install
 
-Download the latest `BatteryUsage-1.0.0.pkg` from GitHub Releases, open it, and follow the installer.
+Download the latest `BatteryUsage-1.0.1.pkg` from GitHub Releases, open it, and follow the installer.
 
 The installer places `Battery Usage.app` in `/Applications`. Launch it once from Applications. From the menu bar dropdown, turn on **Open at Login** if you want it to start automatically.
 
@@ -29,8 +29,8 @@ scripts/package-release.sh
 This creates:
 
 - `build/Battery Usage.app`
-- `dist/BatteryUsage-1.0.0.pkg`
-- `dist/BatteryUsage-1.0.0.zip`
+- `dist/BatteryUsage-1.0.1.pkg`
+- `dist/BatteryUsage-1.0.1.zip`
 
 ## Release
 

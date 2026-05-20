@@ -76,9 +76,10 @@ enum BatteryReader {
 
         if parts.count > 2 {
             let rawETA = parts[2]
-                .replacingOccurrences(of: " remaining", with: "")
             if !rawETA.contains("no estimate"), rawETA.range(of: #"^\d+:\d{2}$"#, options: .regularExpression) != nil {
                 eta = rawETA
+            } else if !rawETA.contains("no estimate") {
+                eta = firstMatch(#"(\d+:\d{2})"#, in: rawETA)
             }
         }
 
@@ -134,14 +135,21 @@ enum BatteryReader {
     }
 }
 
-@main
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private var timer: Timer?
     private var snapshot: BatterySnapshot?
     private var topUsers: [ProcessUsage] = []
+    private var didStart = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        start()
+    }
+
+    func start() {
+        guard !didStart else { return }
+        didStart = true
+
         NSApp.setActivationPolicy(.accessory)
         configureStatusButton()
         refresh()
@@ -157,8 +165,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func configureStatusButton() {
         guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "battery.75percent", accessibilityDescription: "Battery")
-        button.imagePosition = .imageLeading
+        statusItem.length = NSStatusItem.variableLength
+        button.image = nil
+        button.imagePosition = .noImage
         button.toolTip = "Battery Usage"
         button.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .medium)
     }
@@ -167,12 +176,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         snapshot = BatteryReader.snapshot()
         topUsers = BatteryReader.topEnergyUsers()
 
+        statusItem.length = NSStatusItem.variableLength
         if let snapshot {
-            statusItem.button?.title = " \(snapshot.statusTitle)"
-            statusItem.button?.image = symbolForBattery(snapshot)
+            statusItem.button?.title = "Battery \(snapshot.statusTitle)"
+            statusItem.button?.image = nil
         } else {
             statusItem.button?.title = " Battery --"
-            statusItem.button?.image = NSImage(systemSymbolName: "battery.0percent", accessibilityDescription: "Battery unavailable")
+            statusItem.button?.image = nil
         }
 
         rebuildMenu()
@@ -374,12 +384,12 @@ func run(_ launchPath: String, _ arguments: [String]) -> String {
 
     do {
         try process.run()
-        process.waitUntilExit()
     } catch {
         return ""
     }
 
     let data = output.fileHandleForReading.readDataToEndOfFile()
+    process.waitUntilExit()
     return String(data: data, encoding: .utf8) ?? ""
 }
 
@@ -416,3 +426,9 @@ func humanProcessName(_ raw: String) -> String {
 
     return name
 }
+
+let application = NSApplication.shared
+let delegate = AppDelegate()
+application.delegate = delegate
+delegate.start()
+application.run()
