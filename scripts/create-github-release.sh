@@ -12,10 +12,6 @@ if ! /usr/bin/git -C "$ROOT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1
   exit 1
 fi
 
-if ! /usr/bin/git -C "$ROOT_DIR" rev-parse "$TAG" >/dev/null 2>&1; then
-  /usr/bin/git -C "$ROOT_DIR" tag "$TAG"
-fi
-
 /opt/homebrew/bin/gh release create "$TAG" \
   "$ROOT_DIR/dist/BatteryUsage-$VERSION.pkg" \
   "$ROOT_DIR/dist/BatteryUsage-$VERSION.zip" \
