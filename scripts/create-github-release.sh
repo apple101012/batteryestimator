@@ -19,5 +19,6 @@ fi
 /opt/homebrew/bin/gh release create "$TAG" \
   "$ROOT_DIR/dist/BatteryUsage-$VERSION.pkg" \
   "$ROOT_DIR/dist/BatteryUsage-$VERSION.zip" \
+  --target main \
   --title "Battery Usage $VERSION" \
   --notes "Initial native macOS menu bar release. Download the pkg installer for the simplest install path."
