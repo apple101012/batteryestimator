@@ -24,8 +24,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          gh release create "$GITHUB_REF_NAME" \
-            "dist/BatteryUsage-$VERSION.pkg" \
-            "dist/BatteryUsage-$VERSION.zip" \
-            --title "Battery Usage $VERSION" \
-            --notes "Native macOS menu bar release. Download the pkg installer for the simplest install path."
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" \
+              "dist/BatteryUsage-$VERSION.pkg" \
+              "dist/BatteryUsage-$VERSION.zip" \
+              --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              "dist/BatteryUsage-$VERSION.pkg" \
+              "dist/BatteryUsage-$VERSION.zip" \
+              --title "Battery Usage $VERSION" \
+              --notes "Native macOS menu bar release. Download the pkg installer for the simplest install path."
+          fi
